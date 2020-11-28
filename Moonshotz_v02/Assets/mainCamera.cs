@@ -5,10 +5,14 @@ using UnityEngine;
 public class mainCamera : MonoBehaviour
 {
 	public GameObject player1Object;
+	public Player player1;
 	
     // Start is called before the first frame update
     void Start()
-    {
+	{
+		player1 = player1Object.GetComponent<Player>();
+		
+		player1.StartBar();
         
     }
 
@@ -23,6 +27,12 @@ public class mainCamera : MonoBehaviour
 		
 		if (Input.GetMouseButtonDown(0)) {
 			player1.playerClick();
+		}
+		
+		if(player1.GetPlayerState() == Player.PlayerState.BarsFinished) {
+			player1.StartHit();
+		} else if(player1.GetPlayerState() == Player.PlayerState.BallStopped) {
+			player1.StartBar();
 		}
     }
 }
