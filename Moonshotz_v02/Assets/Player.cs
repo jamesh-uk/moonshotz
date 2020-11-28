@@ -20,6 +20,21 @@ public class Player : MonoBehaviour
 		}
 	}
 	
+	public GameObject anglebarPreObject;
+	
+	private AnglebarPre _anglebarPre = null;
+	
+	private AnglebarPre anglebarPre
+	{
+		get
+		{
+			if(_anglebarPre == null) {
+				_anglebarPre = anglebarPreObject.GetComponent<AnglebarPre>();
+			}
+			return _anglebarPre;
+		}
+	}
+	
 	private Ball _ball = null;
 	
 	private Ball ball
@@ -56,6 +71,11 @@ public class Player : MonoBehaviour
     {
 	    if(playerState == PlayerState.PowerBar) {
 	    	if(powerbarPre.GetBarState() == PowerbarPre.PowerbarState.Stopped) {
+		    	playerState = PlayerState.AngleBar;
+		    	anglebarPre.StartBar();
+		    }
+	    } else if(playerState == PlayerState.AngleBar) {
+	    	if(anglebarPre.GetBarState() == AnglebarPre.AnglebarState.Stopped) {
 		    	playerState = PlayerState.BarsFinished;
 		    }
 	    } else if(playerState == PlayerState.BallMoving) {
@@ -76,6 +96,10 @@ public class Player : MonoBehaviour
 	public void playerClick() {
 		if(playerState == PlayerState.PowerBar) {
 			powerbarPre.ClickBar();
+			playerState = PlayerState.AngleBar;
+			anglebarPre.StartBar();
+		} else if(playerState == PlayerState.AngleBar) {
+			anglebarPre.ClickBar();
 			playerState = PlayerState.BarsFinished;
 		}
 	}
@@ -88,7 +112,7 @@ public class Player : MonoBehaviour
 	public void StartHit() {
 		playerState = PlayerState.BallMoving;
 		
-		int angle = 60;
+		float angle = 180 * anglebarPre.GetPercent();
 		float power = 100 * powerbarPre.GetPercent();
 		float radAngle = (angle*Mathf.PI)/180f;
 		
