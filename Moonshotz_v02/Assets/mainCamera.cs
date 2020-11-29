@@ -34,16 +34,39 @@ public class mainCamera : MonoBehaviour
 		}
 	}
 	
+	public GameObject holeTextObject;
+	
+	private HoleText _holeText = null;
+	
+	private HoleText holeText
+	{
+		get
+		{
+			if(_holeText == null) {
+				_holeText = holeTextObject.GetComponent<HoleText>();
+			}
+			return _holeText;
+		}
+	}
+	
+	private int level = 1;
+	
     // Start is called before the first frame update
     void Start()
 	{
+		StartLevel(level);
+        
+	}
+    
+	void StartLevel(int level) {
+		sideTerrain.SetLevel(level);
+		holeText.SetLevel(level);
 		Vector2 teePosition = sideTerrain.GetTeePosition();
 		
-		player1.SetTeePosition(teePosition);
+		player1.SetLevel(teePosition, level);
 		
 		player1.StartBar();
-        
-    }
+	}
 
     // Update is called once per frame
     void Update()
@@ -70,7 +93,15 @@ public class mainCamera : MonoBehaviour
 			if(sideTerrain.IsXOnTerrain(player1.getBallX())) {
 				player1.SetBallOutOfBounds();
 			}
-			
+		} else if(player1.GetPlayerState() == Player.PlayerState.PlayerNextLevel) {
+			level++;
+			if(level > 9) {
+				StartLevel(1);
+			} else {
+				StartLevel(level);
+			}
+		} else if(player1.GetPlayerState() == Player.PlayerState.PlayerDead) {
+			StartLevel(1);
 		}
     }
 }

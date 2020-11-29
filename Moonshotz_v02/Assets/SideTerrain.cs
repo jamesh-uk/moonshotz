@@ -8,14 +8,11 @@ public class SideTerrain : MonoBehaviour
 {
 	public const int MIN = 1;
 	public const int MAX = 30;
-	public const int LENGTH = 100;
 	public const int SCAN_RADIUS = 2;
 	
 	public const int HOLE_WIDTH = 2;
 	public const int GREEN_WIDTH = 18;
-	public const int HOLE_START = 9;
-
-	float[] heightmap = new float[LENGTH];
+	private int holeStart = 9;
    
 	public MeshFilter meshFilter;
 	public Mesh mesh;
@@ -25,22 +22,52 @@ public class SideTerrain : MonoBehaviour
 	private Vector2 teePosition;
 	
 	private int terrainLength = -1;
-
-	void Awake()
-	{
+	
+	public void SetLevel(int level) {
+		
 		mesh = new Mesh();
 		mesh.name = "Terrain mesh";
 		meshFilter.mesh = mesh;
-        
-		for (int i = 0; i < LENGTH; i++)
-		{
-			heightmap[i] = UnityEngine.Random.Range(MIN, MAX);
-		}
-        
-        
-		for (int i = 0; i < 3; i++ )
-		{
-			Smooth();
+		
+		float[] heightmap = null;
+		
+		if(level > 0 && level < 8) {
+			
+			if(level == 1) {
+				heightmap = SetRandomHeights(1,30,50);
+			} else if (level == 2) {
+				heightmap = SetRandomHeights(1,30,100);
+			} else if (level == 3) {
+				heightmap = SetRandomHeights(1,50,100);
+			} else if (level == 4) {
+				heightmap = SetRandomHeights(1,30,100);
+				heightmap[0] = 200;
+			} else if (level == 5) {
+				heightmap = SetRandomHeights(1,30,100);
+				heightmap[heightmap.Length-1] = 150;
+			} else if (level == 6) {
+				heightmap = SetRandomHeights(10,30,100);
+				heightmap[0] = 200;
+				heightmap[heightmap.Length-1] = 150;
+			} else if (level == 7) {
+				heightmap = SetRandomHeights(10,30,100);
+			}
+			
+			for (int i = 0; i < 3; i++ )
+			{
+				Smooth(heightmap);
+			}
+			
+			if (level == 7) {
+				heightmap[0] = 1;
+				heightmap[heightmap.Length-1] = 1;
+			}
+		} else if (level == 8) {
+			heightmap = SetSlopeHeights(10,50,30);
+		}  else if (level == 9) {
+			heightmap = SetSlopeHeights(30,10,40);
+			heightmap[heightmap.Length-1] = 1;
+			holeStart = 3;
 		}
 		
 		mesh.Clear();
@@ -51,17 +78,17 @@ public class SideTerrain : MonoBehaviour
 		
 		teePosition = new Vector2(8, teeHeight);
 		
-		float greenHeight = heightmap[LENGTH -1];
+		float greenHeight = heightmap[heightmap.Length -1];
 		
 		heightMapList.AddRange(Enumerable.Repeat(teeHeight, 10));
 		
 		heightMapList.AddRange(heightmap);
 		
-		this.holeXStart = heightMapList.Count + HOLE_START;
+		this.holeXStart = heightMapList.Count + holeStart;
 		
-		heightMapList.AddRange(Enumerable.Repeat(greenHeight, HOLE_START));
+		heightMapList.AddRange(Enumerable.Repeat(greenHeight, holeStart));
 		heightMapList.AddRange(Enumerable.Repeat(greenHeight-2, HOLE_WIDTH));
-		heightMapList.AddRange(Enumerable.Repeat(greenHeight, GREEN_WIDTH-HOLE_START));
+		heightMapList.AddRange(Enumerable.Repeat(greenHeight, GREEN_WIDTH-holeStart));
 		heightMapList.AddRange(Enumerable.Repeat(greenHeight+3, 3));
         
 		List<Vector3> positions = BuildPositions(heightMapList.ToArray());
@@ -71,9 +98,28 @@ public class SideTerrain : MonoBehaviour
 		mesh.triangles = triangles.ToArray();
 		mesh.RecalculateNormals();
 		
-		terrainLength = positions.Count;
+		terrainLength = heightMapList.Count;
 		
 		CreatePolygonCollider(positions.ToArray(), triangles.ToArray());
+	}
+	
+	float[] SetRandomHeights(int min, int max, int length) {
+		float[] heightmap = new float[length];
+		for (int i = 0; i < length; i++)
+		{
+			heightmap[i] = UnityEngine.Random.Range(min, max);
+		}
+		return heightmap;
+	}
+	
+	float[] SetSlopeHeights(int start, int end, int length) {
+		float[] heightmap = new float[length];
+		float delta = ((float)end -(float)start) /(float) length;
+		for (int i = 0; i < length; i++)
+		{
+			heightmap[i] = start + i * delta;
+		}
+		return heightmap;
 	}
 	
 	public Vector2 GetTeePosition() {
@@ -92,7 +138,7 @@ public class SideTerrain : MonoBehaviour
 	{
 	}
     
-	void Smooth()
+	void Smooth(float[] heightmap)
 	{
 		for (int i = 0; i < heightmap.Length; i++)
 		{
@@ -154,6 +200,12 @@ public class SideTerrain : MonoBehaviour
 	
 	void CreatePolygonCollider(Vector3[] vertices, int[] triangles)
 	{
+		PolygonCollider2D oldCollider = gameObject.GetComponent<PolygonCollider2D>();
+		// Remove a collider if it already exists. 
+		if(oldCollider != null) {
+			Destroy(oldCollider);
+		}
+		
 		// Get just the outer edges from the mesh's triangles (ignore or remove any shared edges)
 		Dictionary<string, KeyValuePair<int, int>> edges = new Dictionary<string, KeyValuePair<int, int>>();
 		for (int i = 0; i < triangles.Length; i += 3) {

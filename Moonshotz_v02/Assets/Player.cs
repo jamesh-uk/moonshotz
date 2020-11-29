@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
 	public GameObject ballObject;
 	public GameObject powerbarPreObject;
 	public GameObject statusTextObject;
+	public GameObject ShotsRemainObject;
 	
 	private PowerbarPre _powerbarPre = null;
 	
@@ -62,6 +63,19 @@ public class Player : MonoBehaviour
 		}
 	}
 	
+	private ShotsRemainText _shotsRemainText = null;
+	
+	private ShotsRemainText shotsRemainText
+	{
+		get
+		{
+			if(_shotsRemainText == null) {
+				_shotsRemainText = ShotsRemainObject.GetComponent<ShotsRemainText>();
+			}
+			return _shotsRemainText;
+		}
+	}
+	
 	public enum PlayerState {
 		CountDown,
 		PowerBar,
@@ -79,6 +93,7 @@ public class Player : MonoBehaviour
 	private PlayerState playerState = PlayerState.PowerBar;
 	
 	private int shotCount = 0;
+	private int level = 1;
 	
     // Start is called before the first frame update
     void Start()
@@ -104,7 +119,10 @@ public class Player : MonoBehaviour
 	    }
     }
     
-	public void SetTeePosition(Vector2 tee) {
+	public void SetLevel(Vector2 tee, int newLevel) {
+		this.level = newLevel;
+		shotCount = 0;
+		
 		ballObject.transform.position = new Vector3(tee.x,tee.y+0.505f,0);
 	}
     
@@ -128,9 +146,15 @@ public class Player : MonoBehaviour
 	}
 	
 	public void StartBar() {
-		playerState = PlayerState.PowerBar;
-		powerbarPre.StartBar();
-		statusText.TakeShot();
+		int shotsLeft = 10 - level - shotCount;
+		shotsRemainText.SetShots(shotsLeft);
+		if(shotsLeft <= 0) {
+			playerState = PlayerState.PlayerDead;
+		} else {
+			playerState = PlayerState.PowerBar;
+			powerbarPre.StartBar();
+			statusText.TakeShot();
+		}
 	}
 	
 	public void StartHit() {
@@ -142,6 +166,7 @@ public class Player : MonoBehaviour
 		float radAngle = (angle*Mathf.PI)/180f;
 		
 		shotCount++;
+		shotsRemainText.SetShots(10 - level - shotCount);
 		
 		ball.hit(power,radAngle);
 	}
@@ -153,10 +178,24 @@ public class Player : MonoBehaviour
 	public void SetBallInHole() {
 		playerState = PlayerState.BallInHole;
 		statusText.InTheHole();
+		StartCoroutine(WaitForNextLevel());
+	}
+	
+	IEnumerator WaitForNextLevel()
+	{
+		yield return new WaitForSeconds(5);
+		playerState = PlayerState.PlayerNextLevel;
+	}
+	
+	IEnumerator WaitForDead()
+	{
+		yield return new WaitForSeconds(5);
+		playerState = PlayerState.PlayerDead;
 	}
 	
 	public void SetBallOutOfBounds() {
 		playerState = PlayerState.BallOutOfBounds;
 		statusText.OutOfBounds();
+		StartCoroutine(WaitForDead());
 	}
 }
