@@ -10,11 +10,21 @@ public class SideTerrain : MonoBehaviour
 	public const int MAX = 30;
 	public const int LENGTH = 100;
 	public const int SCAN_RADIUS = 2;
+	
+	public const int HOLE_WIDTH = 2;
+	public const int GREEN_WIDTH = 18;
+	public const int HOLE_START = 9;
 
 	float[] heightmap = new float[LENGTH];
    
 	public MeshFilter meshFilter;
 	public Mesh mesh;
+	
+	private int holeXStart = -1;
+	
+	private Vector2 teePosition;
+	
+	private int terrainLength = -1;
 
 	void Awake()
 	{
@@ -39,7 +49,7 @@ public class SideTerrain : MonoBehaviour
 		
 		float teeHeight = heightmap[0];
 		
-		SetBallPosition(8, teeHeight);
+		teePosition = new Vector2(8, teeHeight);
 		
 		float greenHeight = heightmap[LENGTH -1];
 		
@@ -47,11 +57,11 @@ public class SideTerrain : MonoBehaviour
 		
 		heightMapList.AddRange(heightmap);
 		
-		int holePos = 9;
+		this.holeXStart = heightMapList.Count + HOLE_START;
 		
-		heightMapList.AddRange(Enumerable.Repeat(greenHeight, holePos));
-		heightMapList.AddRange(Enumerable.Repeat(greenHeight-2, 2));
-		heightMapList.AddRange(Enumerable.Repeat(greenHeight, 18-holePos));
+		heightMapList.AddRange(Enumerable.Repeat(greenHeight, HOLE_START));
+		heightMapList.AddRange(Enumerable.Repeat(greenHeight-2, HOLE_WIDTH));
+		heightMapList.AddRange(Enumerable.Repeat(greenHeight, GREEN_WIDTH-HOLE_START));
 		heightMapList.AddRange(Enumerable.Repeat(greenHeight+3, 3));
         
 		List<Vector3> positions = BuildPositions(heightMapList.ToArray());
@@ -61,14 +71,21 @@ public class SideTerrain : MonoBehaviour
 		mesh.triangles = triangles.ToArray();
 		mesh.RecalculateNormals();
 		
+		terrainLength = positions.Count;
+		
 		CreatePolygonCollider(positions.ToArray(), triangles.ToArray());
 	}
 	
-	void SetBallPosition(int x, float teeHeight) {
-		GameObject ball = GameObject.Find("Ball");
-		ball.transform.position = new Vector3(x,teeHeight+0.505f,0);
-		
-		GameObject.Find("Main Camera").transform.position = new Vector3(x,25-ball.transform.position.y,-50);
+	public Vector2 GetTeePosition() {
+		return this.teePosition;
+	}
+	
+	public bool IsXInHole(float x) {
+		return (x >= holeXStart - 1) && (x <= holeXStart + HOLE_WIDTH + 1);
+	}
+	
+	public bool IsXOnTerrain(float x) {
+		return x < 0 || x >= terrainLength; 
 	}
     
 	void Update ()

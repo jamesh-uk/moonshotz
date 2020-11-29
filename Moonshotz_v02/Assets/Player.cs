@@ -6,6 +6,7 @@ public class Player : MonoBehaviour
 {
 	public GameObject ballObject;
 	public GameObject powerbarPreObject;
+	public GameObject statusTextObject;
 	
 	private PowerbarPre _powerbarPre = null;
 	
@@ -48,6 +49,19 @@ public class Player : MonoBehaviour
 		}
 	}
 	
+	private StatusText _statusText = null;
+	
+	private StatusText statusText
+	{
+		get
+		{
+			if(_statusText == null) {
+				_statusText = statusTextObject.GetComponent<StatusText>();
+			}
+			return _statusText;
+		}
+	}
+	
 	public enum PlayerState {
 		CountDown,
 		PowerBar,
@@ -56,10 +70,15 @@ public class Player : MonoBehaviour
 		SwingClub,
 		BallMoving,
 		BallStopped,
-		BallInHole
+		BallInHole,
+		BallOutOfBounds,
+		PlayerDead,
+		PlayerNextLevel
 	}
 	
 	private PlayerState playerState = PlayerState.PowerBar;
+	
+	private int shotCount = 0;
 	
     // Start is called before the first frame update
     void Start()
@@ -85,6 +104,10 @@ public class Player : MonoBehaviour
 	    }
     }
     
+	public void SetTeePosition(Vector2 tee) {
+		ballObject.transform.position = new Vector3(tee.x,tee.y+0.505f,0);
+	}
+    
 	public float getBallX() {
 		return ball.getBallX();
 	}
@@ -107,19 +130,33 @@ public class Player : MonoBehaviour
 	public void StartBar() {
 		playerState = PlayerState.PowerBar;
 		powerbarPre.StartBar();
+		statusText.TakeShot();
 	}
 	
 	public void StartHit() {
 		playerState = PlayerState.BallMoving;
+		statusText.Hide();
 		
 		float angle = 180 * anglebarPre.GetPercent();
 		float power = 100 * powerbarPre.GetPercent();
 		float radAngle = (angle*Mathf.PI)/180f;
+		
+		shotCount++;
 		
 		ball.hit(power,radAngle);
 	}
 	
 	public PlayerState GetPlayerState() {
 		return playerState;
+	}
+	
+	public void SetBallInHole() {
+		playerState = PlayerState.BallInHole;
+		statusText.InTheHole();
+	}
+	
+	public void SetBallOutOfBounds() {
+		playerState = PlayerState.BallOutOfBounds;
+		statusText.OutOfBounds();
 	}
 }

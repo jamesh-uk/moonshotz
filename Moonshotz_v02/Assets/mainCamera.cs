@@ -5,12 +5,41 @@ using UnityEngine;
 public class mainCamera : MonoBehaviour
 {
 	public GameObject player1Object;
-	public Player player1;
+	private Player _player1 = null;
+	
+	private Player player1
+	{
+		get
+		{
+			if(_player1 == null) {
+				_player1 = player1Object.GetComponent<Player>();
+			}
+			return _player1;
+		}
+	}
+	
+	
+	public GameObject sideTerrainObject;
+	
+	private SideTerrain _sideTerrain = null;
+	
+	private SideTerrain sideTerrain
+	{
+		get
+		{
+			if(_sideTerrain == null) {
+				_sideTerrain = sideTerrainObject.GetComponent<SideTerrain>();
+			}
+			return _sideTerrain;
+		}
+	}
 	
     // Start is called before the first frame update
     void Start()
 	{
-		player1 = player1Object.GetComponent<Player>();
+		Vector2 teePosition = sideTerrain.GetTeePosition();
+		
+		player1.SetTeePosition(teePosition);
 		
 		player1.StartBar();
         
@@ -32,7 +61,16 @@ public class mainCamera : MonoBehaviour
 		if(player1.GetPlayerState() == Player.PlayerState.BarsFinished) {
 			player1.StartHit();
 		} else if(player1.GetPlayerState() == Player.PlayerState.BallStopped) {
-			player1.StartBar();
+			if(sideTerrain.IsXInHole(player1.getBallX())) {
+				player1.SetBallInHole();
+			} else {
+				player1.StartBar();
+			}
+		} else if(player1.GetPlayerState() == Player.PlayerState.BallMoving) {
+			if(sideTerrain.IsXOnTerrain(player1.getBallX())) {
+				player1.SetBallOutOfBounds();
+			}
+			
 		}
     }
 }
