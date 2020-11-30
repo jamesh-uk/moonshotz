@@ -8,6 +8,12 @@ public class Player : MonoBehaviour
 	public GameObject powerbarPreObject;
 	public GameObject statusTextObject;
 	public GameObject ShotsRemainObject;
+	public GameObject AstronautObject;
+	
+	public AudioClip HitBallAudio;
+	public AudioClip BallInHoleAudio;
+	
+	AudioSource m_MyAudioSource;
 	
 	private PowerbarPre _powerbarPre = null;
 	
@@ -97,7 +103,8 @@ public class Player : MonoBehaviour
 	
     // Start is called before the first frame update
     void Start()
-    {
+	{
+		m_MyAudioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -122,6 +129,11 @@ public class Player : MonoBehaviour
 	public void SetLevel(Vector2 tee, int newLevel) {
 		this.level = newLevel;
 		shotCount = 0;
+		
+		Astronaut astronaut = AstronautObject.GetComponent<Astronaut>();
+		AstronautObject.transform.position =  new Vector3(tee.x,tee.y+2f,0);
+		astronaut.show();
+		astronaut.stopAnim();
 		
 		ballObject.transform.position = new Vector3(tee.x,tee.y+0.505f,0);
 	}
@@ -158,8 +170,22 @@ public class Player : MonoBehaviour
 	}
 	
 	public void StartHit() {
+		Astronaut astronaut = AstronautObject.GetComponent<Astronaut>();
+		
+		if(astronaut.isShown()) {
+			playerState = PlayerState.SwingClub;
+			astronaut.animate();	
+			StartCoroutine(WaitForHit());
+			StartCoroutine(WaitForHideAstronaut());
+		} else {
+			hitBallNow();
+		}
+	}
+	
+	private void hitBallNow() {
 		playerState = PlayerState.BallMoving;
 		statusText.Hide();
+		m_MyAudioSource.PlayOneShot(HitBallAudio);
 		
 		float angle = 180 * anglebarPre.GetPercent();
 		float power = 100 * powerbarPre.GetPercent();
@@ -178,6 +204,8 @@ public class Player : MonoBehaviour
 	public void SetBallInHole() {
 		playerState = PlayerState.BallInHole;
 		statusText.InTheHole();
+		m_MyAudioSource.PlayOneShot(BallInHoleAudio);
+		
 		StartCoroutine(WaitForNextLevel());
 	}
 	
@@ -191,6 +219,19 @@ public class Player : MonoBehaviour
 	{
 		yield return new WaitForSeconds(5);
 		playerState = PlayerState.PlayerDead;
+	}
+	
+	IEnumerator WaitForHit()
+	{
+		yield return new WaitForSeconds(0.5f);
+		hitBallNow();
+	}
+	
+	IEnumerator WaitForHideAstronaut()
+	{
+		yield return new WaitForSeconds(4);
+		Astronaut astronaut = AstronautObject.GetComponent<Astronaut>();
+		astronaut.hide();
 	}
 	
 	public void SetBallOutOfBounds() {

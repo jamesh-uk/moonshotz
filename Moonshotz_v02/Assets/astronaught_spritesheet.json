@@ -1,0 +1,91 @@
+{ "frames": {
+   "Sprite-0001 0.": {
+    "frame": { "x": 0, "y": 0, "w": 76, "h": 76 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 76, "h": 76 },
+    "sourceSize": { "w": 76, "h": 76 },
+    "duration": 100
+   },
+   "Sprite-0001 1.": {
+    "frame": { "x": 76, "y": 0, "w": 76, "h": 76 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 76, "h": 76 },
+    "sourceSize": { "w": 76, "h": 76 },
+    "duration": 100
+   },
+   "Sprite-0001 2.": {
+    "frame": { "x": 152, "y": 0, "w": 76, "h": 76 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 76, "h": 76 },
+    "sourceSize": { "w": 76, "h": 76 },
+    "duration": 100
+   },
+   "Sprite-0001 3.": {
+    "frame": { "x": 228, "y": 0, "w": 76, "h": 76 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 76, "h": 76 },
+    "sourceSize": { "w": 76, "h": 76 },
+    "duration": 100
+   },
+   "Sprite-0001 4.": {
+    "frame": { "x": 304, "y": 0, "w": 76, "h": 76 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 76, "h": 76 },
+    "sourceSize": { "w": 76, "h": 76 },
+    "duration": 100
+   },
+   "Sprite-0001 5.": {
+    "frame": { "x": 380, "y": 0, "w": 76, "h": 76 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 76, "h": 76 },
+    "sourceSize": { "w": 76, "h": 76 },
+    "duration": 100
+   },
+   "Sprite-0001 6.": {
+    "frame": { "x": 456, "y": 0, "w": 76, "h": 76 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 76, "h": 76 },
+    "sourceSize": { "w": 76, "h": 76 },
+    "duration": 100
+   },
+   "Sprite-0001 7.": {
+    "frame": { "x": 532, "y": 0, "w": 76, "h": 76 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 76, "h": 76 },
+    "sourceSize": { "w": 76, "h": 76 },
+    "duration": 100
+   },
+   "Sprite-0001 8.": {
+    "frame": { "x": 608, "y": 0, "w": 76, "h": 76 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 76, "h": 76 },
+    "sourceSize": { "w": 76, "h": 76 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.2.25-x64",
+  "image": "astronaught_spritesheet.png",
+  "format": "RGBA8888",
+  "size": { "w": 684, "h": 76 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Layer 1", "opacity": 255, "blendMode": "normal" },
+   { "name": "Layer 2", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}
