@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class PowerbarPre : MonoBehaviour
 {
-	private float dx = 0.005f;
+	private const float BAR_SPEED = 1f;
+	private float dx = BAR_SPEED;
 	public GameObject powerbar;
 	
 	public enum PowerbarState {
@@ -36,8 +37,7 @@ public class PowerbarPre : MonoBehaviour
 	void Update()
 	{
 		if(state == PowerbarState.Running) {
-			
-			powerBarImage.fillAmount += dx;
+			powerBarImage.fillAmount += dx * Time.deltaTime;
 			
 			if(powerBarImage.fillAmount >= 1) {
 				powerBarImage.fillAmount = 1;
@@ -52,7 +52,7 @@ public class PowerbarPre : MonoBehaviour
 	}
 	
 	public void StartBar() {
-		dx = 0.005f;
+		dx = BAR_SPEED;
 		powerBarImage.fillAmount = 0;
 		state = PowerbarState.Running;
 	}

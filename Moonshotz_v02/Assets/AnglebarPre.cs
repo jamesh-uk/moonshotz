@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class AnglebarPre : MonoBehaviour
 {
-	private float dx = 0.005f;
+	private const float BAR_SPEED = 1f;
+	private float dx = BAR_SPEED;
 	public GameObject anglebar;
 	
 	public enum AnglebarState {
@@ -37,7 +38,7 @@ public class AnglebarPre : MonoBehaviour
 	{
 		if(state == AnglebarState.Running) {
 			
-			angleBarImage.fillAmount += dx;
+			angleBarImage.fillAmount += dx * Time.deltaTime;
 			
 			if(angleBarImage.fillAmount >= 1) {
 				angleBarImage.fillAmount = 1;
@@ -52,7 +53,7 @@ public class AnglebarPre : MonoBehaviour
 	}
 	
 	public void StartBar() {
-		dx = 0.005f;
+		dx = BAR_SPEED;
 		angleBarImage.fillAmount = 0;
 		state = AnglebarState.Running;
 	}
